@@ -11,30 +11,42 @@ print("Loading Sandra's Base Control System (SBCS) V0.1.0")
 print("Searching for modules.")
 local modules = {}
 for file in filesystem.list("/usr/lib/sbcs/") do
-  print("Loaded module: "..file)
+  print("Loaded module. "..file)
   local module = dofile("/usr/lib/sbcs/"..file)
   modules[module.name] = module
+  module.modules = modules
 end
 os.sleep(1)
+if modules["settings"] then
+  modules["settings"].autoResolution()
+end
 local buttons = {}
+local handlingTouch = false
 function handleTouch(_, address, x, y, _, player)
-  term.clear()
-  term.setCursor(1,1)
-  event.ignore("touch", handleTouch)
-  buttons[y]()
-  event.listen("touch", handleTouch)
+  if buttons[y] then
+    term.setCursor(1,1)
+    term.clear()
+    event.ignore("touch", handleTouch)
+    handlingTouch = buttons[y]
+  end
 end
 function drawGUI()
-  term.clear()
-  for n,module in pairs(modules) do
-    local x,y = term.getCursor()
-    print(module.dispname..":    "..module:message())
-    buttons[y] = module.activate
+  if not handlingTouch then
+    term.clear()
+    for n,module in pairs(modules) do
+      local x,y = term.getCursor()
+      print(module.dispname..":    "..module.message())
+      buttons[y] = module.activate
+    end
+    local resX, resY = gpu.getResolution()
+    term.setCursor(1, resY)
+    term.write("Touch here to quit.")
+    buttons[resY] = quit
+  else
+    handlingTouch()
+    event.listen("touch", handleTouch)
+    handlingTouch = false
   end
-  local resX, resY = gpu.getResolution()
-  term.setCursor(1, resY)
-  term.write("Touch here to quit.")
-  buttons[resY] = quit
 end
 function mainGUI()
   event.listen("touch", handleTouch)
