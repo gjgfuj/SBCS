@@ -11,8 +11,10 @@ function module.message() return "Touch to open settings." end
 local running = true
 local buttons = {}
 local thingToExecute = nil
+local manualResolution = false
 
 function module.resolution()
+  manualResolution = true
   term.write("Please enter the width of the screen: ")
   local width = tonumber(term.read())
   if not width then
@@ -30,12 +32,17 @@ function tablelength(T)
   for _ in pairs(T) do count = count + 1 end
   return count
 end
+function module.callback()
+  if not manualResolution then
+    module.autoResolution()
+  end
+end
 function module.autoResolution()
   local x = 10
   local y = tablelength(module.modules)+5
   for n,othermodule in pairs(module.modules) do
     local len = othermodule.dispname..":    "..othermodule.message()
-    if #len+5 > x then x = #len+10 end
+    if #len+1 > x then x = #len+1 end
   end
   gpu.setResolution(x,y)
 end

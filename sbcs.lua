@@ -16,7 +16,15 @@ for file in filesystem.list("/usr/lib/sbcs/") do
   modules[module.name] = module
   module.modules = modules
 end
+function runCallbacks()
+  for n,module in pairs(modules) do
+    if module.callback then
+      module.callback()
+    end
+  end
+end
 os.sleep(1)
+runCallbacks()
 if modules["settings"] then
   modules["settings"].autoResolution()
 end
@@ -59,6 +67,7 @@ function quit()
 end
 mainGUI()
 while stillrunning do
-  os.sleep(1)
+  os.sleep(0.7)
+  runCallbacks()
   drawGUI()
 end
