@@ -1,20 +1,31 @@
-local term = require("term")
 local component = require("component")
-local event = require("event")
 local capbank = component.capacitor_bank
 local module = {}
 local energyStored = 0
 local changePerTick = 0
+local done = false
 module.name = "capacitorbank"
 module.dispname = "Capacitor Bank Storage"
 function module.callback() energyStored = capbank.getEnergyStored() changePerTick = capbank.getAverageChangePerTick() end
-function module.message() return "Storage: "..energyStored.."RF, RF/t: "..changePerTick end
-function module.activate() 
-  print("Storage: "..energyStored.."RF, RF/t: "..changePerTick)
-  print("Max Storage:  "..capbank.getMaxEnergyStored().."RF")
-  print("Max RF/t in:  "..capbank.getMaxInput())
-  print("Max RF/t out: "..capbank.getMaxOutput())
-  print("Touch to go back.")
-  event.pull("touch")
+function module.message() return "Storage: "..module.api.formatNum(energyStored).."RF, IO: "..module.api.formatNum(changePerTick).."RF" end
+local function back()
+  done = true
+end
+local function list()
+  local fnum = module.api.formatNum
+  if done then return false end
+  return {
+  "Storage: "..fnum(energyStored).."RF, RF/t: "..fnum(changePerTick),
+  "Max Storage:  "..fnum(capbank.getMaxEnergyStored()).."RF",
+  "Max RF/t in:  "..fnum(capbank.getMaxInput()),
+  "Max RF/t out: "..fnum(capbank.getMaxOutput()),
+  "Touch to go back."}
+end
+local function buttons()
+  return {nil, nil, nil, nil, back}
+end
+function module.activate()
+  done = false
+  module.api.displayList(list, buttons)
 end
 return module
