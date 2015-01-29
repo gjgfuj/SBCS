@@ -8,7 +8,7 @@ local api = require("sbcsapi")
 local gpu = component.gpu
 
 term.clear()
-print("Loading Sandra's Base Control System (SBCS) V0.1.0")
+print("Loading Sandra's Base Control System (SBCS) V0.2.0")
 print("Searching for modules.")
 local modules = {}
 api.modules = modules
@@ -18,6 +18,7 @@ for file in filesystem.list("/usr/lib/sbcs/") do
   module.api = api
   modules[module.name] = module
   module.modules = modules
+  if module.setup ~= nil then module.setup() end
 end
 os.sleep(1)
 local stillrunning = true

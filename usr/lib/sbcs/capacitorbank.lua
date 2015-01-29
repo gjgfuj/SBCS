@@ -1,5 +1,4 @@
-local component = require("component")
-local capbank = component.capacitor_bank
+local capbank
 local module = {}
 local energyStored = 0
 local changePerTick = 0
@@ -8,6 +7,7 @@ module.name = "capacitorbank"
 module.dispname = "Capacitor Bank Storage"
 function module.callback() energyStored = capbank.getEnergyStored() changePerTick = capbank.getAverageChangePerTick() end
 function module.message() return "Storage: "..module.api.formatNum(energyStored).."RF, IO: "..module.api.formatNum(changePerTick).."RF" end
+function module.setup() capbank = module.api.getComponent("capbank")
 local function back()
   done = true
 end
@@ -22,7 +22,7 @@ local function list()
   "Touch to go back."}
 end
 local function buttons()
-  return {nil, nil, nil, nil, back}
+  return {5=back}
 end
 function module.activate()
   done = false

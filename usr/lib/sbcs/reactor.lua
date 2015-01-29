@@ -1,8 +1,5 @@
-local term = require("term")
-local component = require("component")
-local event = require("event")
-local capbank = component.capacitor_bank
-local reactor = component.br_reactor
+local capbank
+local reactor
 local module = {}
 local online = reactor.getActive()
 local reactorRF = 0
@@ -14,6 +11,10 @@ local buttons = {}
 local running = true
 module.name = "reactor"
 module.dispname = "Reactor Status"
+function module.setup()
+  capbank = module.api.getComponent("capacitor_bank")
+  reactor = module.api.getComponent("br_reactor")
+end
 function module.callback() 
   reactorRF = reactor.getEnergyProducedLastTick() 
   reactorFuelUsage = reactor.getFuelConsumedLastTick()

@@ -2,11 +2,25 @@ local term = require("term")
 local component = require("component")
 local event = require("event")
 api = {}
+function api.print(...)
+  print(...)
+end
+function api.getComponent(componenttype, address)
+  if address == nil then
+    return component.proxy(component.list(componenttype)())
+  else
+    return component.proxy(component.get(address))
+  end
+end
+function api.listComponent(componentype)
+  local t = {}
+  for address in component.list(componentype)
+    table.insert(t, address)
+  end
+  return t
+end
 function api.setResolution(x,y)
   component.gpu.setResolution(x,y)
-end
-function api.formatNum(num)
-  
 end
 function api.autoResolution(list)
   local x = 10
@@ -41,7 +55,7 @@ function api.displayList(listFunction, buttonsFunction)
       api.autoResolution(list)
       term.clear()
       for _, text in ipairs(list) do
-        print(text)
+        api.print(text)
       end
       os.sleep(1)
     end
