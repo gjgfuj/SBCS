@@ -1,26 +1,21 @@
-local component = require("component")
 local filesystem = require("filesystem")
-local term = require("term")
-local event = require("event")
-local computer = require("computer")
 local api = require("sbcsapi")
 
-local gpu = component.gpu
+local gpu = api.getComponent("gpu")
 
-term.clear()
-print("Loading Sandra's Base Control System (SBCS) V0.2.0")
-print("Searching for modules.")
+api.clear()
+api.print("Loading Sandra's Base Control System (SBCS) V0.2.0")
+api.print("Searching for modules.")
 local modules = {}
 api.modules = modules
 for file in filesystem.list("/usr/lib/sbcs/") do
-  print("Loaded module. "..file)
+  api.print("Loaded module. "..file)
   local module = dofile("/usr/lib/sbcs/"..file)
   module.api = api
   modules[module.name] = module
   module.modules = modules
   if module.setup ~= nil then module.setup() end
 end
-os.sleep(1)
 local stillrunning = true
 function list()
   if not stillrunning then return false end

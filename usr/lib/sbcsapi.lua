@@ -2,9 +2,20 @@ local term = require("term")
 local component = require("component")
 local event = require("event")
 api = {}
+function api.write(...)
+  term.write(...)
+end
 function api.print(...)
   print(...)
 end
+function api.listen(event, listener) event.listen(event, listener) end
+function api.ignore(event, listener) event.ignore(event, listener) end
+function api.pullEvent(event) return event.pull(event) end
+function api.setCursor(x,y) term.setCursor(x,y) end
+function api.sleep(time) os.sleep(time) end
+function api.clear() term.clear() end
+
+--ABOVE IS IMPORTANT IMPLEMENTATION STUFF. BELOW IS HELPER THINGS. MOST OF BELOW SHOULD JUST WORK IF THE ABOVE DOES.
 function api.getComponent(componenttype, address)
   if address == nil then
     return component.proxy(component.list(componenttype)())
@@ -14,13 +25,13 @@ function api.getComponent(componenttype, address)
 end
 function api.listComponent(componentype)
   local t = {}
-  for address in component.list(componentype)
+  for address in component.list(componentype) do
     table.insert(t, address)
   end
   return t
 end
 function api.setResolution(x,y)
-  component.gpu.setResolution(x,y)
+  api.getComponent("gpu").setResolution(x,y)
 end
 function api.autoResolution(list)
   local x = 10
@@ -36,24 +47,24 @@ function api.displayList(listFunction, buttonsFunction)
   local thingToExecute = nil
   function handleTouch(_, address, x, y, _, player)
     if buttons[y] then
-      term.clear()
-      term.setCursor(1,1)
-      event.ignore("touch", handleTouch)
+      api.clear()
+      api.setCursor(1,1)
+      api.ignore("touch", handleTouch)
       thingToExecute = buttons[y]
     end
   end
   while type(list) == "table" do
-    event.listen("touch", handleTouch)
+    api.listen("touch", handleTouch)
     if thingToExecute then
       thingToExecute()
       thingToExecute = nil
-      event.listen("touch", handleTouch)
+      api.listen("touch", handleTouch)
     else
       for n, module in pairs(api.modules) do
         module.callback()
       end
       api.autoResolution(list)
-      term.clear()
+      api.clear()
       for _, text in ipairs(list) do
         api.print(text)
       end
@@ -62,7 +73,7 @@ function api.displayList(listFunction, buttonsFunction)
     list = listFunction()
     buttons = buttonsFunction()
   end
-  event.ignore("touch", handleTouch)
+  api.ignore("touch", handleTouch)
 end
 function api.formatNum(num)
   num = num * 100

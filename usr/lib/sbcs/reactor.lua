@@ -1,7 +1,7 @@
 local capbank
 local reactor
 local module = {}
-local online = reactor.getActive()
+local online
 local reactorRF = 0
 local reactorControlRodLevel = 0
 local reactorFuelUsage = 0
@@ -14,6 +14,7 @@ module.dispname = "Reactor Status"
 function module.setup()
   capbank = module.api.getComponent("capacitor_bank")
   reactor = module.api.getComponent("br_reactor")
+  online = reactor.getActive()
 end
 function module.callback() 
   reactorRF = reactor.getEnergyProducedLastTick() 

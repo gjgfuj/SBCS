@@ -7,7 +7,7 @@ module.name = "capacitorbank"
 module.dispname = "Capacitor Bank Storage"
 function module.callback() energyStored = capbank.getEnergyStored() changePerTick = capbank.getAverageChangePerTick() end
 function module.message() return "Storage: "..module.api.formatNum(energyStored).."RF, IO: "..module.api.formatNum(changePerTick).."RF" end
-function module.setup() capbank = module.api.getComponent("capbank")
+function module.setup() capbank = module.api.getComponent("capbank", nil) end
 local function back()
   done = true
 end
@@ -22,7 +22,7 @@ local function list()
   "Touch to go back."}
 end
 local function buttons()
-  return {5=back}
+  return { nil,nil,nil,nil,back }
 end
 function module.activate()
   done = false
