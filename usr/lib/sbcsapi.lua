@@ -8,9 +8,9 @@ end
 function api.print(...)
   print(...)
 end
-function api.listen(event, listener) event.listen(event, listener) end
-function api.ignore(event, listener) event.ignore(event, listener) end
-function api.pullEvent(event) return event.pull(event) end
+function api.listen(e, listener) event.listen(e, listener) end
+function api.ignore(e, listener) event.ignore(e, listener) end
+function api.pullEvent(e) return event.pull(e) end
 function api.setCursor(x,y) term.setCursor(x,y) end
 function api.sleep(time) os.sleep(time) end
 function api.clear() term.clear() end
